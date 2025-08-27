@@ -1,0 +1,51 @@
+import { useEffect } from 'react';
+import ParticleField from './components/ParticleField';
+import Hero from './components/sections/Hero';
+import WhyAnoma from './components/sections/WhyAnoma';
+import Architecture from './components/sections/Architecture';
+import UseCases from './components/sections/UseCases';
+import Roadmap from './components/sections/Roadmap';
+import Builders from './components/sections/Builders';
+import FAQ from './components/sections/FAQ';
+import Footer from './components/Footer';
+import './App.css';
+
+function App() {
+  useEffect(() => {
+    // 检查用户是否偏好减少动画
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      document.body.classList.add('reduce-motion');
+    }
+
+    // 平滑滚动
+    document.documentElement.style.scrollBehavior = 'smooth';
+
+    return () => {
+      document.documentElement.style.scrollBehavior = 'auto';
+    };
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      {/* 粒子背景 */}
+      <ParticleField />
+      
+      {/* 主要内容 */}
+      <main>
+        <Hero />
+        <WhyAnoma />
+        <Architecture />
+        <UseCases />
+        <Roadmap />
+        <Builders />
+        <FAQ />
+      </main>
+      
+      {/* 页脚 */}
+      <Footer />
+    </div>
+  );
+}
+
+export default App;
