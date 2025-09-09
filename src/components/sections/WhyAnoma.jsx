@@ -102,7 +102,7 @@ const WhyAnoma = () => {
           <div className="relative">
             <div className="w-32 h-32 opacity-20">
               <img 
-                src="/src/assets/consensus-circle.png" 
+                src="/consensus-circle.png"
                 alt="共识法阵" 
                 className="w-full h-full rotating"
               />

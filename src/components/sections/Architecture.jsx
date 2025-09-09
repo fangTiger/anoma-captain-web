@@ -39,10 +39,10 @@ const Architecture = () => {
           viewport={{ once: true }}
         >
           <div >
-            <img src="/src/assets/demo-0.png" alt="应用示例" />
-            <img src="/src/assets/demo-1.png" alt="应用示例" />
-            <img src="/src/assets/demo-2.png" alt="应用示例" />
-            <img src="/src/assets/demo-3.png" alt="应用示例" />
+            <img src="/demo-0.png" alt="应用示例" />
+            <img src="/demo-1.png" alt="应用示例" />
+            <img src="/demo-2.png" alt="应用示例" />
+            <img src="/demo-3.png" alt="应用示例" />
           </div>
         </motion.div>
 

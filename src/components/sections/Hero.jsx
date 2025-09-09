@@ -76,7 +76,7 @@ const Hero = () => {
       {/* 装饰性符文 */}
       <div className="absolute top-20 left-20 w-16 h-16 opacity-20 rotating">
         <img 
-          src="/src/assets/arcane-rune-1.png" 
+          src="/arcane-rune-1.png"
           alt="符文装饰" 
           className="w-full h-full"
         />
@@ -84,7 +84,7 @@ const Hero = () => {
       
       <div className="absolute bottom-20 right-20 w-20 h-20 opacity-20 rotating" style={{ animationDelay: '1s' }}>
         <img 
-          src="/src/assets/arcane-rune-2.png" 
+          src="/arcane-rune-2.png"
           alt="符文装饰" 
           className="w-full h-full"
         />
