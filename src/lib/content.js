@@ -39,7 +39,7 @@ export const content = {
   
   architecture: {
     title: "法术书中的架构奥秘",
-    subtitle: "意图中心化与异构安全的完美融合",
+    subtitle: "意图中心化与实际场景的完美融合",
     sections: [
       {
         title: "意图机器 (IM)",

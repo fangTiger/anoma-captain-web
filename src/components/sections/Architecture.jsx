@@ -38,18 +38,11 @@ const Architecture = () => {
           transition={{ duration: 1 }}
           viewport={{ once: true }}
         >
-          <div className="relative w-100 h-80">
-            <img 
-              src="/src/assets/consensus-circle.png" 
-              alt="Anoma架构图" 
-              className="w-full h-full rotating opacity-60"
-            />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary mb-2">Anoma</div>
-                <div className="text-sm text-muted-foreground">意图机器</div>
-              </div>
-            </div>
+          <div >
+            <img src="/src/assets/demo-0.png" alt="应用示例" />
+            <img src="/src/assets/demo-1.png" alt="应用示例" />
+            <img src="/src/assets/demo-2.png" alt="应用示例" />
+            <img src="/src/assets/demo-3.png" alt="应用示例" />
           </div>
         </motion.div>
 

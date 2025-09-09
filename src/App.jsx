@@ -701,11 +701,11 @@ function App() {
             {[
               // {key: 'home', label: '首页'},
               {key: 'home', label: '首页'},
+              {key: 'Architecture', label: '应用落地'},
               {key: 'whitepaper', label: '白皮书解读'},
               {key: 'architecture', label: '技术架构'},
-              {key: 'whyAnoma', label: '为何选择 Anoma'},
-              {key: 'Architecture', label: '法术书中的架构奥秘'},
               {key: 'UseCases', label: '应用秘章'},
+              {key: 'whyAnoma', label: '为何选择 Anoma'},
               {key: 'FAQ', label: '魔导师问答'},
               {key: 'roadmap', label: '发展路线图'}
             ].map((nav) => (
