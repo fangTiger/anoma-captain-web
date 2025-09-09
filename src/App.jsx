@@ -499,6 +499,290 @@ const ArchitecturePage = () => (
   </div>
 );
 
+
+
+// 贪吃蛇游戏组件 - 添加在其他页面组件之后
+const SnakeGame = () => {
+  useEffect(() => {
+    // 游戏逻辑代码
+    const cvs = document.getElementById('game');
+    if (!cvs) return;
+
+    const ctx = cvs.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const restartBtn = document.getElementById('restart');
+
+    const size = 20;
+    const boardPx = 400;
+    const cells = boardPx / size;
+
+    let snake, dir, nextDir, apple, score, best, speed, lastTick, paused, over, rafId;
+
+    function readBest() {
+      try { return Number(localStorage.getItem('snake_best') || 0); }
+      catch (_) { return 0; }
+    }
+
+    function writeBest(v) {
+      try { localStorage.setItem('snake_best', String(v)); } catch (_) {}
+    }
+
+    function init() {
+      snake = [{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+      dir = {x:1,y:0};
+      nextDir = {x:1,y:0};
+      apple = spawnApple();
+      score = 0;
+      speed = 120;
+      paused = false;
+      over = false;
+      lastTick = performance.now() - speed - 1;
+      if (scoreEl) scoreEl.textContent = '0';
+      best = readBest();
+      if (bestEl) bestEl.textContent = best;
+    }
+
+    function spawnApple() {
+      while (true) {
+        const a = {x: Math.floor(Math.random()*cells), y: Math.floor(Math.random()*cells)};
+        if (!snake.some(s => s.x === a.x && s.y === a.y)) return a;
+      }
+    }
+
+    function loop(time) {
+      const delta = time - lastTick;
+      if (!paused && !over && delta >= speed) {
+        lastTick = time;
+        dir = nextDir;
+        const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+
+        if (head.x < 0 || head.x >= cells || head.y < 0 || head.y >= cells) {
+          gameOver(); draw(); rafId = requestAnimationFrame(loop); return;
+        }
+
+        const willGrow = (head.x === apple.x && head.y === apple.y);
+        const bodyToCheck = willGrow ? snake : snake.slice(0, -1);
+        if (bodyToCheck.some(s => s.x === head.x && s.y === head.y)) {
+          gameOver(); draw(); rafId = requestAnimationFrame(loop); return;
+        }
+
+        snake.unshift(head);
+        if (willGrow) {
+          score++;
+          if (scoreEl) scoreEl.textContent = score;
+          if (score > best) {
+            best = score;
+            if (bestEl) bestEl.textContent = best;
+            writeBest(best);
+          }
+          speed = Math.max(60, speed - 2);
+          apple = spawnApple();
+        } else {
+          snake.pop();
+        }
+      }
+      draw();
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function drawGrid() {
+      ctx.save();
+      ctx.strokeStyle = '#111';
+      ctx.lineWidth = 1;
+      for (let i=0;i<=cells;i++){
+        ctx.beginPath(); ctx.moveTo(i*size,0); ctx.lineTo(i*size,boardPx); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0,i*size); ctx.lineTo(boardPx,i*size); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function draw() {
+      ctx.clearRect(0,0,boardPx,boardPx);
+      const g = ctx.createLinearGradient(0,0,0,boardPx);
+      g.addColorStop(0,'#0a0a0a'); g.addColorStop(1,'#141414');
+      ctx.fillStyle = g; ctx.fillRect(0,0,boardPx,boardPx);
+
+      drawGrid();
+
+      ctx.fillStyle = '#e74c3c';
+      roundRect(apple.x*size+2, apple.y*size+2, size-4, size-4, 4, true);
+
+      ctx.fillStyle = '#2ecc71';
+      snake.forEach((s,i)=>{
+        const r = i===0 ? 6 : 3;
+        roundRect(s.x*size+1, s.y*size+1, size-2, size-2, r, true);
+      });
+
+      if (paused) overlay('Paused 暂停');
+      if (over) overlay('Game Over 游戏结束');
+    }
+
+    function roundRect(x,y,w,h,r,fill) {
+      ctx.beginPath();
+      ctx.moveTo(x+r,y);
+      ctx.arcTo(x+w,y,x+w,y+h,r);
+      ctx.arcTo(x+w,y+h,x,y+h,r);
+      ctx.arcTo(x,y+h,x,y,r);
+      ctx.arcTo(x,y,x+w,y,r);
+      if (fill) ctx.fill(); else ctx.stroke();
+    }
+
+    function overlay(text){
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(0,0,boardPx,boardPx);
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = 'bold 28px system-ui';
+      ctx.fillText(text, boardPx/2, boardPx/2);
+      ctx.font = '14px system-ui';
+      ctx.fillText('Press Enter or R to restart · 按回车或 R 重新开始', boardPx/2, boardPx/2+28);
+    }
+
+    function gameOver(){ over = true; }
+
+    function handleKeyDown(e){
+      const k = e.key.toLowerCase();
+      if (k === 'arrowup' || k === 'w') {
+        if (dir.y !== 1) nextDir = {x:0,y:-1};
+        e.preventDefault();
+      } else if (k === 'arrowdown' || k === 's') {
+        if (dir.y !== -1) nextDir = {x:0,y:1};
+        e.preventDefault();
+      } else if (k === 'arrowleft' || k === 'a') {
+        if (dir.x !== 1) nextDir = {x:-1,y:0};
+        e.preventDefault();
+      } else if (k === 'arrowright' || k === 'd') {
+        if (dir.x !== -1) nextDir = {x:1,y:0};
+        e.preventDefault();
+      } else if (k === ' ') {
+        paused = !paused;
+        e.preventDefault();
+      } else if (k === 'enter' || k === 'r') {
+        restart();
+        e.preventDefault();
+      }
+    }
+
+    function restart(){
+      if (rafId) cancelAnimationFrame(rafId);
+      init();
+      draw();
+      rafId = requestAnimationFrame(loop);
+      if (restartBtn) restartBtn.blur();
+    }
+
+    function scaleForDPR(){
+      const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+      cvs.width = boardPx * dpr;
+      cvs.height = boardPx * dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    if (restartBtn) restartBtn.addEventListener('click', restart);
+    scaleForDPR();
+    window.addEventListener('resize', scaleForDPR);
+
+    restart();
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      if (restartBtn) restartBtn.removeEventListener('click', restart);
+      window.removeEventListener('resize', scaleForDPR);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)',
+      color: '#e0e0e0',
+      padding: '2rem',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center'
+    }}>
+      <h1 style={{
+        fontSize: '3rem',
+        fontWeight: 'bold',
+        marginBottom: '2rem',
+        background: 'linear-gradient(135deg, #00ffcc 0%, #8b5cf6 50%, #06b6d4 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+        textAlign: 'center'
+      }}>
+        休闲小游戏
+      </h1>
+
+      <div style={{
+        maxWidth: '1200px',
+        width: '100%',
+        background: 'rgba(26, 26, 46, 0.8)',
+        border: '1px solid rgba(0, 255, 204, 0.2)',
+        borderRadius: '16px',
+        padding: '2rem',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}>
+        <div className="wrap" style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          width: '100%'
+        }}>
+          <div className="hud" style={{
+            display: 'flex',
+            gap: '16px',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            marginBottom: '1rem'
+          }}>
+            <div className="label" style={{opacity: 0.9}}>Score 分数：<span id="score">0</span></div>
+            <div className="label" style={{opacity: 0.9}}>Best 最高：<span id="best">0</span></div>
+            <button className="btn" id="restart" type="button" style={{
+              padding: '6px 10px',
+              border: '1px solid #444',
+              borderRadius: '6px',
+              background: '#1e1e1e',
+              cursor: 'pointer',
+              userSelect: 'none',
+              color: '#e0e0e0'
+            }}>Restart 重新开始</button>
+          </div>
+
+          <canvas id="game" width="400" height="400" aria-label="Snake Game" style={{
+            width: '400px',
+            height: '400px',
+            background: '#000',
+            boxShadow: '0 0 0 2px #333'
+          }}></canvas>
+
+          <div className="muted" id="help" style={{
+            color: '#aaa',
+            fontSize: '12px',
+            textAlign: 'center',
+            lineHeight: '1.4',
+            marginTop: '1rem'
+          }}>
+            Arrow keys / WASD to move · Space to pause/resume · Enter or R to restart<br />
+            方向键/WASD 移动 · 空格 暂停/继续 · 回车 或 R 重新开始
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
 const RoadmapPage = () => (
   <div style={{
     minHeight: '100vh',
@@ -662,7 +946,8 @@ function App() {
     UseCases: <UseCases />,
     FAQ: <FAQ />,
     architecture: <ArchitecturePage />,
-    roadmap: <RoadmapPage />
+    roadmap: <RoadmapPage />,
+    snake: <SnakeGame />
   };
 
   return (
@@ -707,7 +992,8 @@ function App() {
               {key: 'UseCases', label: '应用秘章'},
               {key: 'whyAnoma', label: '为何选择 Anoma'},
               {key: 'FAQ', label: '魔导师问答'},
-              {key: 'roadmap', label: '发展路线图'}
+              {key: 'roadmap', label: '发展路线图'},
+              {key: 'snake', label: '休闲小游戏'}
             ].map((nav) => (
                 <button
                     key={nav.key}
