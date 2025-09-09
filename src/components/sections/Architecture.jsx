@@ -38,7 +38,7 @@ const Architecture = () => {
           transition={{ duration: 1 }}
           viewport={{ once: true }}
         >
-          <div className="relative w-80 h-80">
+          <div className="relative w-100 h-80">
             <img 
               src="/src/assets/consensus-circle.png" 
               alt="Anoma架构图" 

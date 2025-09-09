@@ -654,9 +654,9 @@ function App() {
   const [currentPage, setCurrentPage] = useState('home');
 
   const pages = {
-    home: <HomePage />,
+    home: <Hero />,
     whitepaper: <WhitepaperPage />,
-    hero: <Hero />,
+    // hero: <Hero />,
     whyAnoma: <WhyAnoma />,
     Architecture: <Architecture />,
     UseCases: <UseCases />,
@@ -699,6 +699,7 @@ function App() {
 
           <div style={{display: 'flex', gap: '2rem'}}>
             {[
+              // {key: 'home', label: '首页'},
               {key: 'home', label: '首页'},
               {key: 'whitepaper', label: '白皮书解读'},
               {key: 'architecture', label: '技术架构'},
@@ -776,7 +777,7 @@ function App() {
               fontSize: '1.3rem',
               textShadow: '0 0 10px rgba(0, 255, 204, 0.5)'
             }}>
-              网站由 Captain 制作
+              网站由 Captain(@mycndota) 制作
             </span>
             <span style={{
               fontSize: '1.5rem',
